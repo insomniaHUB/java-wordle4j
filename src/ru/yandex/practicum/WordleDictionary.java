@@ -5,7 +5,7 @@ import java.util.List;
 
 public class WordleDictionary {
 
-    private static final List<String> words = new ArrayList<>();
+    private final List<String> words = new ArrayList<>();
 
     public List<String> getWords() {
         return words;
