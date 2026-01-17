@@ -1,12 +1,8 @@
 package ru.yandex.practicum;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 import static ru.yandex.practicum.Wordle.log;
 

@@ -1,5 +1,4 @@
 package ru.yandex.practicum;
-import java.io.IOException;
 import java.util.*;
 
 import static ru.yandex.practicum.Wordle.log;
