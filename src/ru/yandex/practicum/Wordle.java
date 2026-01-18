@@ -1,5 +1,8 @@
 package ru.yandex.practicum;
 
+import exception.NotCorrectLanguageWord;
+import exception.WordNotFoundInDictionary;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,6 +10,8 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Wordle {
+    public static final int appropriateLength = 5;
+    static PrintWriter printWriter = makePrintWriter();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -19,7 +24,7 @@ public class Wordle {
             try {
                 System.out.println("Введите слово: ");
                 String guess = scanner.nextLine().trim().toLowerCase();
-                if (guess.length() == 5 || guess.isEmpty()) {
+                if (guess.length() == appropriateLength || guess.isEmpty()) {
                     continueGame = game.startGame(guess);
                 } else {
                     System.out.println("Введите правильное слово!");
@@ -50,23 +55,28 @@ public class Wordle {
                 }
             } catch (NotCorrectLanguageWord e) {
                 System.out.println("Пожалуйста, введите слово на русском языке.");
-                log(e.getMessage());
+                log(e.getMessage(), printWriter);
             } catch (WordNotFoundInDictionary e) {
                 System.out.println("Данного слова нет в словаре! Пожалуйста, введите другое слово.");
-                log(e.getMessage());
+                log(e.getMessage(), printWriter);
             } catch (Exception e) {
-                log(e.getMessage());
+                log(e.getMessage(), printWriter);
             }
         }
-        log("Игра окончена.");
+        log("Игра окончена.", printWriter);
+    }
+
+    private static PrintWriter makePrintWriter() {
+        try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("game.log", true)))) {
+            return printWriter;
+        } catch (IOException e) {
+            System.err.println("Ошибка при записи в лог-файл: " + e.getMessage());
+            return null;
+        }
     }
 
 
-    public static void log(String message) {
-        try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("game.log", true)))) {
+    public static void log(String message, PrintWriter printWriter) {
             printWriter.println(message);
-        } catch (IOException e) {
-            System.err.println("Ошибка при записи в лог-файл: " + e.getMessage());
-        }
     }
 }

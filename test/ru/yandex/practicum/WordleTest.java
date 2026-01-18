@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.yandex.practicum.WordleDictionary.normalize;
 
 class WordleTest {
 
@@ -34,12 +35,12 @@ class WordleTest {
         WordleGame game = new WordleGame(dictionary);
         String str = game.startGame("").substring(0, 5);
 
-        assertEquals("белье", game.toRightWord("бельё"));
+        assertEquals("белье", normalize("бельё"));
         assertTrue(dictionary.getWords().contains(game.getClue()));
         assertTrue(dictionary.getWords().contains(game.getAnswer()));
         assertEquals("+++++" + game.getAnswer(), game.startGame(game.getAnswer()));
-        assertTrue(dictionary.getWords().contains(str) && game.enteredWords.contains(str)
-                && !game.clue.contains(str));
+        assertTrue(dictionary.getWords().contains(str) && game.getEnteredWords().contains(str)
+                && !game.getClueList().contains(str));
     }
 
 }

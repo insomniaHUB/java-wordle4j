@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 
 import static ru.yandex.practicum.Wordle.log;
+import static ru.yandex.practicum.Wordle.printWriter;
 
 public class WordleDictionaryLoader {
 
@@ -17,7 +18,7 @@ public class WordleDictionaryLoader {
                 dictionary.addWord(line);
             }
         } catch (Exception e) {
-            log(e.getMessage());
+            log(e.getMessage(), printWriter);
         }
         return dictionary;
     }
