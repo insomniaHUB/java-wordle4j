@@ -4,8 +4,6 @@ import exception.WordNotFoundInDictionary;
 
 import java.util.*;
 
-import static ru.yandex.practicum.Wordle.log;
-import static ru.yandex.practicum.Wordle.printWriter;
 import static ru.yandex.practicum.WordleDictionary.normalize;
 
 public class WordleGame {
@@ -15,10 +13,11 @@ public class WordleGame {
     private List<String> clue = new ArrayList<>();
     private Set<Character> nonCorrectLetters = new HashSet<>();
     private Set<Character> wrongPositionLetter = new HashSet<>();
-    char[] positions = new char[5];
+    private char[] positions = new char[5];
     private List<String> wordsToRemove = new ArrayList<>();
     private List<String> enteredWords = new ArrayList<>();
-    private static String goodSymbols = "^[а-яА-ЯёЁ]+$";
+    private static final String GOOD_SYMBOLS = "^[а-яА-ЯёЁ]+$";
+    private static final int WORD_LENGTH = 5;
 
     public WordleGame(WordleDictionary dictionary) {
         this.dictionary = dictionary;
@@ -31,7 +30,7 @@ public class WordleGame {
     public String startGame(String check) throws WordNotFoundInDictionary, NotCorrectLanguageWord {
         String guess = normalize(check);
 
-        if (!guess.matches(goodSymbols) && !check.isEmpty()) {
+        if (!guess.matches(GOOD_SYMBOLS) && !check.isEmpty()) {
             throw new NotCorrectLanguageWord("Введено слово с некорректными символами.");
         }
 
@@ -56,7 +55,6 @@ public class WordleGame {
             }
 
             if (guess.equals(answer)) {
-                log("Слово отгадано!", printWriter);
                 if (check.isEmpty()) {
                     return "+++++" + answer + guess;
                 }
@@ -67,7 +65,6 @@ public class WordleGame {
 
             if (steps != 0) {
                 steps--;
-                log("Ходов осталось: " + steps, printWriter);
             }
 
             if (check.isEmpty()) {
@@ -82,7 +79,7 @@ public class WordleGame {
     private String getResultStr(String guess) {
         StringBuilder result = new StringBuilder("-----");
         StringBuilder answerCopy = new StringBuilder(answer);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < WORD_LENGTH; i++) {
             if (guess.charAt(i) == answerCopy.charAt(i)) {
                 result.replace(i, i + 1, "+");
                 answerCopy.replace(i, i + 1, "*");
@@ -90,11 +87,11 @@ public class WordleGame {
                 wrongPositionLetter.add(guess.charAt(i));
             }
         }
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < WORD_LENGTH; i++) {
             if (result.charAt(i) == '+') {
                 continue;
             }
-            for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < WORD_LENGTH; j++) {
                 if (answerCopy.charAt(j) == guess.charAt(i)) {
                     result.replace(i, i + 1, "^");
                     answerCopy.replace(j, j + 1, "*");
@@ -105,17 +102,17 @@ public class WordleGame {
         }
 
         Set<Character> letters = new HashSet<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < WORD_LENGTH; i++) {
             if (result.charAt(i) == '+' || result.charAt(i) == '^') {
                 letters.add(guess.charAt(i));
             }
         }
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < WORD_LENGTH; i++) {
             if (result.charAt(i) == '-') {
                 char currentChar = guess.charAt(i);
                 boolean usedLetter = false;
-                for (int j = 0; j < 5; j++) {
+                for (int j = 0; j < WORD_LENGTH; j++) {
                     if (j != i && guess.charAt(j) == currentChar && (result.charAt(j) == '+' || result.charAt(j) == '^')) {
                         usedLetter = true;
                         break;
@@ -139,7 +136,7 @@ public class WordleGame {
 
         wordsToRemove = new ArrayList<>();
         for (String word : clue) {
-            for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < WORD_LENGTH; j++) {
                 if (nonCorrectLetters.contains(word.charAt(j))) {
                     wordsToRemove.add(word);
                     break;
@@ -150,7 +147,7 @@ public class WordleGame {
 
         wordsToRemove = new ArrayList<>();
         for (String word : clue) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < WORD_LENGTH; i++) {
                 if (positions[i] != '0' && word.charAt(i) != positions[i]) {
                     wordsToRemove.add(word);
                     break;

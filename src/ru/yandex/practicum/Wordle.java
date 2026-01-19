@@ -9,9 +9,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import static ru.yandex.practicum.WordleDictionary.normalize;
+
 public class Wordle {
-    public static final int appropriateLength = 5;
-    static PrintWriter printWriter = makePrintWriter();
+    public static final int APPROPRIATE_LENGTH = 5;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -19,64 +20,57 @@ public class Wordle {
         WordleDictionary dictionary = loader.loadWordList();
         WordleGame game = new WordleGame(dictionary);
         String continueGame;
+        try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("game.log", true)))) {
+            while (true) {
+                try {
+                    System.out.println("Введите слово: ");
+                    String guess = normalize(scanner.nextLine());
+                    if (guess.length() == APPROPRIATE_LENGTH || guess.isEmpty()) {
+                        continueGame = game.startGame(guess);
+                    } else {
+                        System.out.println("Введите правильное слово!");
+                        continue;
+                    }
 
-        while (true) {
-            try {
-                System.out.println("Введите слово: ");
-                String guess = scanner.nextLine().trim().toLowerCase();
-                if (guess.length() == appropriateLength || guess.isEmpty()) {
-                    continueGame = game.startGame(guess);
-                } else {
-                    System.out.println("Введите правильное слово!");
-                    continue;
-                }
-
-                if (guess.isEmpty() && continueGame.length() == 10 && !continueGame.startsWith("+")) {
-                    System.out.println("Использовано слово: " + continueGame.substring(0, 5));
-                    System.out.println(continueGame.substring(5));
-                } else if (continueGame.isEmpty()) {
-                    System.out.println("Нет подходящих слов");
-                } else if (continueGame.substring(0, 5).equals("+++++")) {
-                    if (guess.isEmpty()) {
-                        System.out.println(continueGame.substring(10));
-                        System.out.println("+++++");
-                        System.out.println("Слово отгадано! Это было слово - " + continueGame.substring(5, 10));
+                    if (guess.isEmpty() && continueGame.length() == 10 && !continueGame.startsWith("+")) {
+                        System.out.println("Использовано слово: " + continueGame.substring(0, 5));
+                        System.out.println(continueGame.substring(5));
+                    } else if (continueGame.isEmpty()) {
+                        System.out.println("Нет подходящих слов");
+                    } else if (continueGame.substring(0, 5).equals("+++++")) {
+                        if (guess.isEmpty()) {
+                            System.out.println(continueGame.substring(10));
+                            System.out.println("+++++");
+                            System.out.println("Слово отгадано! Это было слово - " + continueGame.substring(5, 10));
+                            printWriter.println("Слово отгадано! Это было слово - " + continueGame.substring(5, 10));
+                            break;
+                        } else {
+                            System.out.println("Слово отгадано! Это было слово - " + continueGame.substring(5));
+                            printWriter.println("Слово отгадано! Это было слово - " + continueGame.substring(5, 10));
+                            break;
+                        }
+                    } else if (continueGame.startsWith("Ходы закончились!")) {
+                        System.out.println("Игра окончена! " + continueGame.substring(0, 17)
+                                + " Это было слово - " + continueGame.substring(17));
+                        printWriter.println("Ходы закончились! Игра окончена!");
                         break;
                     } else {
-                        System.out.println("Слово отгадано! Это было слово - " + continueGame.substring(5));
-                        break;
+                        System.out.println(continueGame);
                     }
-                } else if (continueGame.startsWith("Ходы закончились!")) {
-                    System.out.println("Игра окончена! " + continueGame.substring(0, 17)
-                            + " Это было слово - " + continueGame.substring(17));
-                    break;
-                } else {
-                    System.out.println(continueGame);
+                } catch (NotCorrectLanguageWord e) {
+                    System.out.println("Пожалуйста, введите слово на русском языке.");
+                    printWriter.println(e.getMessage());
+                } catch (WordNotFoundInDictionary e) {
+                    System.out.println("Данного слова нет в словаре! Пожалуйста, введите другое слово.");
+                    printWriter.println(e.getMessage());
+                } catch (Exception e) {
+                    printWriter.println(e.getMessage());
                 }
-            } catch (NotCorrectLanguageWord e) {
-                System.out.println("Пожалуйста, введите слово на русском языке.");
-                log(e.getMessage(), printWriter);
-            } catch (WordNotFoundInDictionary e) {
-                System.out.println("Данного слова нет в словаре! Пожалуйста, введите другое слово.");
-                log(e.getMessage(), printWriter);
-            } catch (Exception e) {
-                log(e.getMessage(), printWriter);
             }
-        }
-        log("Игра окончена.", printWriter);
-    }
-
-    private static PrintWriter makePrintWriter() {
-        try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("game.log", true)))) {
-            return printWriter;
+            printWriter.println("Игра окончена.");
         } catch (IOException e) {
             System.err.println("Ошибка при записи в лог-файл: " + e.getMessage());
-            return null;
         }
-    }
 
-
-    public static void log(String message, PrintWriter printWriter) {
-            printWriter.println(message);
     }
 }

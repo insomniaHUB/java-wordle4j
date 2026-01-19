@@ -3,7 +3,7 @@ package ru.yandex.practicum;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.yandex.practicum.Wordle.appropriateLength;
+import static ru.yandex.practicum.Wordle.APPROPRIATE_LENGTH;
 
 public class WordleDictionary {
 
@@ -14,17 +14,16 @@ public class WordleDictionary {
     }
 
     public void addWord(String word) {
-        if (word.length() == appropriateLength) {
+        if (word.length() == APPROPRIATE_LENGTH) {
             word = normalize(word.toLowerCase());
             words.add(word);
         }
     }
 
     public static String normalize(String word) {
-        for (int i = 0; i < word.length(); i++) {
-            if (word.charAt(i) == 'ё') {
-                word = word.replace("ё", "е");
-            }
+        word = word.trim().toLowerCase();
+        if (word.contains("ё")) {
+            word = word.replace("ё", "е");
         }
         return word;
     }

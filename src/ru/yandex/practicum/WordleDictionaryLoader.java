@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 
-import static ru.yandex.practicum.Wordle.log;
-import static ru.yandex.practicum.Wordle.printWriter;
 
 public class WordleDictionaryLoader {
 
@@ -18,7 +16,7 @@ public class WordleDictionaryLoader {
                 dictionary.addWord(line);
             }
         } catch (Exception e) {
-            log(e.getMessage(), printWriter);
+            System.err.println("Ошибка при загрузки словаря: " + e.getMessage());
         }
         return dictionary;
     }
